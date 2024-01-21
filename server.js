@@ -1,7 +1,8 @@
 const http = require('http');
 const url = require('url');
 
-
+const githubToken = process.env.TOKEN;
+console.log(githubToken);
 const server = http.createServer(async (req, res) => {
     const reqUrl = url.parse(req.url, true);
     
@@ -24,10 +25,15 @@ const server = http.createServer(async (req, res) => {
 
             const response = await fetch(`https://api.github.com/user/${userid}/repos?page=${page}&per_page=${perPage}`, {
                 method: 'GET',
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
             });
 
             const apiResponse = await response.json(); //parsing
-
+            console.log(apiResponse);
             //clean data
             const extractedData = apiResponse.map(repo => ({
                 fork: repo.fork,
@@ -36,7 +42,7 @@ const server = http.createServer(async (req, res) => {
                 desc: repo.description, // Assuming this refers to the description field
                 name: repo.name
             }));
-
+            
             //pagination
             const parsedLinks = parseLinks(response.headers.get('Link')); // Parse Link headers
 
@@ -49,6 +55,7 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ data: extractedData, pagination: paginationLinks }));
         } catch (error) {
+            console.error(error.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Internal Server Error' }));
         }
