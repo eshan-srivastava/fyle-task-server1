@@ -63,6 +63,16 @@ const server = http.createServer(async (req, res) => {
             }, {});
         }
     }
+    else if (reqUrl.pathname === '/test' && req.method === 'GET'){
+        try{
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            // res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+            res.end("your server is online");
+        }
+        catch(err){
+            console.error(err.message);
+        }
+    }
     //Endpoint to fetch GitHub user's info for populating info card
     else if (reqUrl.pathname === '/user' && req.method === 'GET') {
         try {
