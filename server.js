@@ -88,7 +88,12 @@ const server = http.createServer(async (req, res) => {
 
             // Using Node.js fetch
             const response = await fetch(`https://api.github.com/users/${username}`, {
-                method: 'GET'
+                method: 'GET',
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
             });
 
             const userResponse = await response.json(); // Parse JSON response
